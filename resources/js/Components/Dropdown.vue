@@ -9,7 +9,7 @@ const props = defineProps({
         default: '48'
     },
     contentClasses: {
-        default: () => ['py-1', 'bg-white']
+        default: () => ['py-1', 'bg-slate-600']
     }
 });
 
@@ -24,7 +24,7 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 
 const widthClass = computed(() => {
     return {
-        '48': 'w-48',
+        '48': 'w-full',
     }[props.width.toString()];
 });
 
@@ -38,31 +38,33 @@ const alignmentClasses = computed(() => {
     }
 });
 
+const bgClass = computed(() => {
+    if (open.value === !false) {
+        return 'bg-slate-600 rounded-t-lg bg-opacity-90 shadow-lg -m-1';
+    } else {
+        return '';
+    }
+});
+
 const open = ref(false);
 </script>
 
 <template>
-    <div class="relative">
-        <div @click="open = ! open">
+    <div class="relative" :class="[bgClass]">
+        <div @click="open = !open">
             <slot name="trigger" />
         </div>
 
         <!-- Full Screen Dropdown Overlay -->
         <div v-show="open" class="fixed inset-0 z-40" @click="open = false"></div>
 
-        <transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="transform opacity-0 scale-95"
-            enter-to-class="transform opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-75"
-            leave-from-class="transform opacity-100 scale-100"
-            leave-to-class="transform opacity-0 scale-95">
-            <div v-show="open"
-                    class="absolute z-50 mt-2 rounded-md shadow-lg"
-                    :class="[widthClass, alignmentClasses]"
-                    style="display: none;"
-                    @click="open = false">
-                <div class="rounded-md ring-1 ring-black ring-opacity-5" :class="contentClasses">
+        <transition enter-active-class="transition duration-200 ease-out"
+            enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100"
+            leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-100"
+            leave-to-class="transform scale-95 opacity-0">
+            <div v-show="open" class="absolute z-50 rounded-md shadow-lg" :class="[widthClass, alignmentClasses]"
+                style="display: none;" @click="open = false">
+                <div class="py-1.5 px-3 rounded-b-md bg-slate-500 bg-opacity-90" :class="contentClasses">
                     <slot name="content" />
                 </div>
             </div>
